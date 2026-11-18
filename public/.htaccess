@@ -11,7 +11,10 @@ RewriteRule ^(.*)$ https://barkflair.com/$1 [L,R=301]
 
 # Old WordPress pages -> matching parts of the new site (keeps visitors and Google on track)
 # Portfolio pages, portfolio categories (Creative, Branding...) and single projects
-RewriteRule ^(portfolio|project)s?([-_](category|cat|tag))?(/.*)?$ https://barkflair.com/#work [R=301,L,NE]
+RewriteRule ^(portfolio[-_](category|cat|tag)|projects?)(/.*)?$ https://barkflair.com/portfolio/ [R=301,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^portfolio/.+$ https://barkflair.com/portfolio/ [R=301,L]
 RewriteRule ^(branding|creative|design|graphic-design|logo-design)[-a-z]*/?$ https://barkflair.com/#services [R=301,L,NE]
 RewriteRule ^contact[-a-z]*/?$ https://barkflair.com/#contact [R=301,L,NE]
 RewriteRule ^(about[-a-z]*|home|home-[0-9]+)/?$ https://barkflair.com/ [R=301,L]
