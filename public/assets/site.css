@@ -519,6 +519,11 @@ footer{border-top:1px solid var(--line);padding-block:40px}
 .phone .hero-shade{position:absolute;inset:0;border-radius:inherit;z-index:0;background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,transparent 22%,transparent 50%,rgba(0,0,0,.55) 100%);pointer-events:none}
 .phone .rec,.phone .bar{z-index:1}
 .phone .cap,.phone .ui{display:none}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px;width:100%;max-width:380px;margin-inline:auto}
+.hero-stats>div{display:grid;gap:2px;justify-items:center;text-align:center;padding:12px 6px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.hero-stats b{font-weight:900;font-style:italic;font-size:22px;color:var(--fg);letter-spacing:-.01em}
+.hero-stats b i{font-style:normal;color:var(--lime);font-size:17px;margin-left:2px}
+.hero-stats span{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .niche-band{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
 .niche{display:grid;gap:8px;align-content:start;padding:24px 26px;border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--fg);text-decoration:none;transition:border-color .25s,transform .25s}
 .niche:hover{border-color:var(--lime);transform:translateY(-3px)}
