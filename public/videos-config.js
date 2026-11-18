@@ -12,10 +12,10 @@
 window.BARKFLAIR_VIDEOS = {
 
   // Your Bunny Stream delivery address (Bunny > Stream > your library > API > CDN Hostname). Set once.
-  bunnyHost: "vz-730e05ea-f50.b-cdn.net",
+  bunnyHost: "",
 
   // Big "Featured edit" video at the top of the portfolio (leave empty to keep the Google Drive video)
-  featured: "https://player.mediadelivery.net/play/789711/f03d7a6b-42ba-43f7-80ed-b270f49aaaa9",
+  featured: "",
 
   // The 6 portfolio videos, in order
   portfolio: [
