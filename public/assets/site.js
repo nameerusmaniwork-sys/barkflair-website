@@ -422,27 +422,17 @@
   });
 })();
 
-/* Portfolio videos: our own MP4 files (play right on the page, iPhone friendly). Google Drive is the backup. */
+/* Portfolio videos: our own MP4 files, played right on the page (iPhone friendly) */
 (function(){
   function stopOthers(keep){document.querySelectorAll('.gd-play video').forEach(function(v){if(v!==keep&&!v.paused)v.pause();});}
-  function drive(b,box){
-    var f=document.createElement('iframe');
-    f.src='https://drive.google.com/file/d/'+b.getAttribute('data-gd')+'/preview';
-    f.setAttribute('allow','autoplay; fullscreen');f.setAttribute('allowfullscreen','');
-    f.title=b.getAttribute('aria-label').replace(/^Play /,'');
-    box.innerHTML='';box.classList.add('gd-drive');box.appendChild(f);
-  }
   document.addEventListener('click',function(e){
     var b=e.target.closest&&e.target.closest('.gd-btn');if(!b)return;
+    var src=b.getAttribute('data-mp4');if(!src)return;
     var box=document.createElement('div');box.className='gd-play';
-    var src=b.getAttribute('data-mp4');
-    b.replaceWith(box);
-    if(!src){drive(b,box);return;}
     var v=document.createElement('video');
     v.setAttribute('playsinline','');v.playsInline=true;v.controls=true;v.preload='auto';
     var img=b.querySelector('img');if(img)v.poster=img.getAttribute('src');
-    v.src=src;box.appendChild(v);
-    v.addEventListener('error',function(){drive(b,box);},{once:true});
+    v.src=src;box.appendChild(v);b.replaceWith(box);
     v.addEventListener('play',function(){stopOthers(v);});
     stopOthers(v);
     var p=v.play();if(p&&p.catch)p.catch(function(){});
