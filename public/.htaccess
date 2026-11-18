@@ -1,0 +1,64 @@
+# ===== BarkFlair website settings =====
+Options -Indexes
+DirectoryIndex index.html index.php
+
+# Send every visitor to https://barkflair.com (secure, without "www")
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/\.well-known/
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteRule ^(.*)$ https://barkflair.com/$1 [L,R=301]
+
+# Old WordPress pages -> matching parts of the new site (keeps visitors and Google on track)
+# Portfolio pages, portfolio categories (Creative, Branding...) and single projects
+RewriteRule ^(portfolio|project)s?([-_](category|cat|tag))?(/.*)?$ https://barkflair.com/#work [R=301,L,NE]
+RewriteRule ^(branding|creative|design|graphic-design|logo-design)[-a-z]*/?$ https://barkflair.com/#services [R=301,L,NE]
+RewriteRule ^contact[-a-z]*/?$ https://barkflair.com/#contact [R=301,L,NE]
+RewriteRule ^(about[-a-z]*|home|home-[0-9]+)/?$ https://barkflair.com/ [R=301,L]
+RewriteRule ^(digital-marketing|social-media|web-development|website-development|web-design|mobile-app|app-development|resource-augmentation|seo)[-a-z]*/?$ https://barkflair.com/#pricing [R=301,L,NE]
+RewriteRule ^services?/?$ https://barkflair.com/#services [R=301,L,NE]
+RewriteRule ^video-editing[-a-z]*/?$ https://barkflair.com/short-form-video-editing/ [R=301,L]
+# Old blog archives (categories, tags, authors, dates)
+RewriteRule ^(category|tag|author)/.*$ https://barkflair.com/blog/ [R=301,L]
+RewriteRule ^(19|20)[0-9][0-9]/.*$ https://barkflair.com/blog/ [R=301,L]
+
+# Branded "page not found" page
+ErrorDocument 404 /404.html
+
+# Correct file types
+AddType font/woff2 .woff2
+AddType application/manifest+json .webmanifest
+
+# Compress text files so pages load faster
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript application/json application/xml image/svg+xml application/manifest+json
+</IfModule>
+
+# Let browsers keep fonts, images and code for longer (files are versioned)
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 hour"
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/x-icon "access plus 1 month"
+  ExpiresByType video/mp4 "access plus 1 month"
+</IfModule>
+
+# Always load the newest video links
+<FilesMatch "videos-config\.js$">
+  <IfModule mod_expires.c>
+    ExpiresActive Off
+  </IfModule>
+  <IfModule mod_headers.c>
+    Header set Cache-Control "no-cache"
+  </IfModule>
+</FilesMatch>
+
+# Basic security headers
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
