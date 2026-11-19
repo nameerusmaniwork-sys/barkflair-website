@@ -257,17 +257,8 @@
     cap.innerHTML=lines[li].map(function(w,i){return '<span class="'+(i<=wi?'on':'')+(i<=wi&&hits[w]?' hit':'')+'">'+w+'</span>'}).join(' ');
   }
   render();
-  if(cap&&tc&&!reduce){
-    setInterval(function(){
-      wi++; if(wi>=lines[li].length){wi=0;li=(li+1)%lines.length}
-      render();
-    },500);
-    setInterval(function(){
-      frames=(frames+1)%(6*30);
-      var s=Math.floor(frames/30),f=frames%30;
-      tc.textContent='00:0'+s+':'+(f<10?'0':'')+f;
-    },1000/30);
-  } else { wi=lines[0].length-1; render(); }
+  var hv=document.querySelector('.hero-vid');
+  if(tc&&hv){hv.addEventListener('timeupdate',function(){var t=hv.currentTime,s=Math.floor(t),f=Math.floor((t-s)*30);tc.textContent='00:'+(s<10?'0':'')+s+':'+(f<10?'0':'')+f;});}
 
   // copy email
   var copyBtn=document.getElementById('copy');
@@ -281,7 +272,7 @@
   var header=document.querySelector('header'),body=document.body;
   function headerH(){return header?header.getBoundingClientRect().height:0}
   var lenis=null,velocity=0;
-  if(!reduce&&window.Lenis){
+  if(!reduce&&window.Lenis&&window.matchMedia('(hover: hover) and (pointer: fine)').matches){
     document.documentElement.style.scrollBehavior='auto';
     lenis=new Lenis({duration:1.15,easing:function(t){return Math.min(1,1.001-Math.pow(2,-10*t))},smoothWheel:true,syncTouch:false,wheelMultiplier:1,touchMultiplier:1.4});
     lenis.on('scroll',function(e){velocity=e.velocity||0;});
@@ -309,8 +300,11 @@
 
   // scroll-linked motion: phone parallax, marquee that speeds up as you scroll
   var phone=document.querySelector('.phone'),track=document.querySelector('.marquee-track'),mx=0,lastY=window.pageYOffset;
+  var onScreen=true,looping=false;
+  if('IntersectionObserver' in window){var vis=new Map(),io2=new IntersectionObserver(function(es){es.forEach(function(e){vis.set(e.target,e.isIntersecting)});onScreen=false;vis.forEach(function(v){if(v)onScreen=true});if(onScreen&&!looping&&window.__bfLoop)window.__bfLoop();});[phone,track].forEach(function(el){if(el)io2.observe(el)});}
   if(!reduce){
-    (function loop(){
+    (window.__bfLoop=function loop(){
+      if(!onScreen){looping=false;return;}looping=true;
       var y=window.pageYOffset;
       if(!lenis){velocity=velocity*.85+(y-lastY)*.15;}
       lastY=y;
@@ -421,6 +415,9 @@
       .finally(function(){btn.disabled=false;});
   });
 })();
+
+/* load the hero montage after the page is ready */
+(function(){var v=document.querySelector('.hero-vid');if(!v||!v.getAttribute('data-src'))return;function go(){v.src=v.getAttribute('data-src');v.load();var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==='complete')setTimeout(go,200);else window.addEventListener('load',function(){setTimeout(go,200)});})();
 
 /* Portfolio videos: our own MP4 files, played right on the page (iPhone friendly) */
 (function(){
