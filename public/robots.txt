@@ -4,3 +4,4 @@ Disallow: /dashboard/
 Disallow: /track.php
 
 Sitemap: https://barkflair.com/sitemap.xml
+Sitemap: https://barkflair.com/video-sitemap.xml
