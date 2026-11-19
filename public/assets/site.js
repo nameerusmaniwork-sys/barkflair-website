@@ -419,17 +419,35 @@
 /* load the hero montage after the page is ready */
 (function(){var v=document.querySelector('.hero-vid');if(!v||!v.getAttribute('data-src'))return;function go(){v.src=v.getAttribute('data-src');v.load();var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==='complete')setTimeout(go,200);else window.addEventListener('load',function(){setTimeout(go,200)});})();
 
-/* Portfolio videos: our own MP4 files, played right on the page (iPhone friendly) */
+/* Portfolio videos: our own MP4 files, played right on the page (iPhone friendly).
+   Speed: each video gets ready (metadata + first frames) as its card scrolls near the screen,
+   starts buffering the moment a finger touches it, and plays on tap from what is already loaded. */
 (function(){
+  var ready=new WeakMap();
   function stopOthers(keep){document.querySelectorAll('.gd-play video').forEach(function(v){if(v!==keep&&!v.paused)v.pause();});}
+  function prep(b,level){
+    var v=ready.get(b),src=b.getAttribute('data-mp4');if(!src)return null;
+    if(!v){
+      v=document.createElement('video');
+      v.setAttribute('playsinline','');v.playsInline=true;v.muted=false;v.controls=true;
+      var img=b.querySelector('img');if(img)v.poster=img.getAttribute('src');
+      v.preload=level;v.src=src;ready.set(b,v);
+    }else if(level==='auto'&&v.preload!=='auto'){v.preload='auto';}
+    return v;
+  }
+  var slow=navigator.connection&&(navigator.connection.saveData||/2g/.test(navigator.connection.effectiveType||''));
+  if('IntersectionObserver' in window&&!slow){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){prep(e.target,'metadata');io.unobserve(e.target);}});},{rootMargin:'300px 0px'});
+    document.querySelectorAll('.gd-btn[data-mp4]').forEach(function(b){io.observe(b);});
+  }
+  ['pointerdown','touchstart','mouseenter'].forEach(function(ev){
+    document.addEventListener(ev,function(e){var b=e.target.closest&&e.target.closest('.gd-btn');if(b)prep(b,'auto');},{passive:true,capture:true});
+  });
   document.addEventListener('click',function(e){
     var b=e.target.closest&&e.target.closest('.gd-btn');if(!b)return;
-    var src=b.getAttribute('data-mp4');if(!src)return;
+    var v=prep(b,'auto');if(!v)return;
     var box=document.createElement('div');box.className='gd-play';
-    var v=document.createElement('video');
-    v.setAttribute('playsinline','');v.playsInline=true;v.controls=true;v.preload='auto';
-    var img=b.querySelector('img');if(img)v.poster=img.getAttribute('src');
-    v.src=src;box.appendChild(v);b.replaceWith(box);
+    box.appendChild(v);b.replaceWith(box);
     v.addEventListener('play',function(){stopOthers(v);});
     stopOthers(v);
     var p=v.play();if(p&&p.catch)p.catch(function(){});
